@@ -174,7 +174,7 @@ class ScraperAPIHandler(BaseHTTPRequestHandler):
         """Custom log format"""
         print(f"[API] {args[0]}")
 
-def run_server(port=8001):
+def run_server(port=8002):
     server_address = ('', port)
     httpd = HTTPServer(server_address, ScraperAPIHandler)
     print(f"\n🚀 Scraper API running on http://localhost:{port}")
@@ -182,4 +182,6 @@ def run_server(port=8001):
     httpd.serve_forever()
 
 if __name__ == '__main__':
-    run_server(8002)
+    # Use Railway's PORT environment variable if available
+    port = int(os.environ.get('PORT', 8002))
+    run_server(port)
