@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AusMarket Intelligence Feed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css?v=2">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <div>
+                    <h1>AusMarket <span>Intelligence</span></h1>
+                    <p>Curated insights on Australian migration, employment, and emerging industries.</p>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="search-container">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Search articles by headline, source, or category..."
+                    >
+                </div>
+                
+                <div class="controls-row">
+                    <div class="filter-group" id="filter-group">
+                        <button class="filter-btn active" data-category="all">All</button>
+                    </div>
+                    
+                    <div class="sort-container">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select" class="sort-select">
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="source">Source (A-Z)</option>
+                            <option value="category">Category</option>
+                        </select>
+                    </div>
+
+                    <button id="refresh-btn" class="refresh-btn" type="button">
+                        <span class="refresh-spinner"></span>
+                        <span class="refresh-text">Fetch New Articles</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    Showing <strong id="visible-count">0</strong> of <strong id="total-count">0</strong> articles
+                </div>
+                <div class="stat-item" id="last-updated">
+                    Last updated: Loading...
+                </div>
+                <div class="stat-item status" id="refresh-status"></div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div id="progress-bar" class="progress-bar" style="display: none;">
+                <div class="progress-info">
+                    <span id="progress-text" class="progress-text">0%</span>
+                    <span id="progress-eta" class="progress-eta"></span>
+                </div>
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div id="feed-container" class="grid-container">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Fetching latest market data...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/app.js?v=2"></script>
+</body>
+</html>
