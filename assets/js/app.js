@@ -306,25 +306,105 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refreshBtn.disabled) return;
         
         setLoading(true);
-        refreshStatus.textContent = 'Reloading articles...';
+        
+        // Show progress bar
+        const progressBar = document.getElementById('progress-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const progressEta = document.getElementById('progress-eta');
+        
+        progressBar.style.display = 'block';
+        refreshStatus.textContent = 'Starting scraper...';
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+        progressEta.textContent = '';
+        
+        let progressInterval = null;
         
         try {
-            // Simply reload the articles from JSON
-            await loadArticles(false);
-            refreshStatus.textContent = '✓ Articles refreshed';
+            const response = await fetch('https://web-production-32676.up.railway.app/api/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             
-            setTimeout(() => {
-                refreshStatus.textContent = '';
-            }, 3000);
+            const result = await response.json();
+            
+            if (result.success) {
+                // Start polling for progress
+                progressInterval = setInterval(async () => {
+                    try {
+                        const progressResponse = await fetch('https://web-production-32676.up.railway.app/api/progress');
+                        const progress = await progressResponse.json();
+                        
+                        // Update progress bar
+                        progressFill.style.width = `${progress.percentage}%`;
+                        progressText.textContent = `${progress.percentage}%`;
+                        
+                        // Update ETA
+                        if (progress.eta_seconds > 0) {
+                            const minutes = Math.floor(progress.eta_seconds / 60);
+                            const seconds = progress.eta_seconds % 60;
+                            if (minutes > 0) {
+                                progressEta.textContent = `ETA: ${minutes}m ${seconds}s`;
+                            } else {
+                                progressEta.textContent = `ETA: ${seconds}s`;
+                            }
+                        } else {
+                            progressEta.textContent = '';
+                        }
+                        
+                        // Update status message
+                        if (progress.message) {
+                            refreshStatus.textContent = progress.message;
+                        }
+                        
+                        // Check if completed
+                        if (!progress.running && progress.current >= progress.total) {
+                            clearInterval(progressInterval);
+                            progressInterval = null;
+                            
+                            refreshStatus.textContent = `✓ Completed! Found ${progress.articles_found} new articles`;
+                            progressFill.style.width = '100%';
+                            progressText.textContent = '100%';
+                            progressEta.textContent = '';
+                            
+                            // Reload articles after a short delay
+                            setTimeout(() => {
+                                loadArticles(false);
+                                setLoading(false);
+                                
+                                // Hide progress bar after another delay
+                                setTimeout(() => {
+                                    progressBar.style.display = 'none';
+                                    refreshStatus.textContent = '';
+                                }, 3000);
+                            }, 1000);
+                            return;
+                        }
+                    } catch (pollError) {
+                        console.error('Progress poll error:', pollError);
+                    }
+                }, 500); // Poll every 500ms
+                
+            } else {
+                throw new Error(result.message);
+            }
         } catch (error) {
-            console.error('Refresh error:', error);
-            refreshStatus.textContent = '✗ Failed to refresh articles';
+            console.error('Scraper error:', error);
+            refreshStatus.textContent = '✗ Failed to connect to scraper API.';
+            setLoading(false);
+            progressBar.style.display = 'none';
+            
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
             
             setTimeout(() => {
                 refreshStatus.textContent = '';
-            }, 5000);
-        } finally {
-            setLoading(false);
+            }, 10000);
         }
     }
 
