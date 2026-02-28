@@ -14,6 +14,8 @@
 
 **AusMarket Intelligence Feed** is a curated news aggregation system that scrapes, filters, and displays Australia-focused articles about migration, employment, visa pathways, and emerging industries. Built for job and visa consultation businesses, it provides your clients with relevant, up-to-date market intelligence.
 
+**🌐 Live Demo:** https://navodhya-fernando.github.io/au-news-scraper
+
 ---
 
 ## 🧠 Core Features
@@ -48,20 +50,21 @@ au-news-scraper/
 ├── data/
 │   ├── articles.json       # Scraped articles database
 │   └── meta.json           # Last update timestamp
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # Auto-deploy to GitHub Pages
+├── Procfile                # Railway deployment config
+├── railway.json            # Railway configuration
+├── requirements.txt        # Python dependencies
 ├── LICENSE
 └── README.md
 ```
 
 ---
 
-## ⚙️ Setup Guide
+## ⚙️ Local Development Setup
 
 ### 1️⃣ Install Dependencies
 
 ```bash
+pip install -r requirements.txt
 cd scraper
 pip install -r requirements.txt
 ```
@@ -180,30 +183,39 @@ Returns real-time scraping progress.
 
 ## 🚀 Deployment
 
-### GitHub Pages (Frontend Only)
+### Current Deployment
 
-1. Push to GitHub
+✅ **Frontend:** GitHub Pages  
+🔗 https://navodhya-fernando.github.io/au-news-scraper
+
+✅ **Backend API:** Railway  
+🔗 https://web-production-32676.up.railway.app
+
+### Deploy Your Own
+
+#### Frontend (GitHub Pages)
+
+1. Fork this repository
 2. Go to **Settings → Pages**
-3. Source: **GitHub Actions**
-4. The `deploy.yml` workflow will auto-deploy on every push
+3. Source: Select **Deploy from a branch**
+4. Branch: **Main** / **root**
+5. Save and wait for deployment
 
-### Full Stack Deployment
+#### Backend (Railway)
 
-For the scraper button to work on production, you'll need:
-
-1. **Frontend:** GitHub Pages, Netlify, or Vercel
-2. **Backend:** Deploy `api.py` on:
-   - Heroku
-   - Railway
-   - DigitalOcean
-   - AWS EC2
-
-Update the fetch URL in [assets/js/app.js](assets/js/app.js):
-```javascript
-const response = await fetch('https://your-api-domain.com/api/scrape', {
-    method: 'POST'
-});
-```
+1. Sign up at **https://railway.app** (free)
+2. Click **"New Project"** → **"Deploy from GitHub repo"**
+3. Select your forked repository
+4. Railway will auto-detect Python and deploy
+5. Go to **Settings → Networking → Generate Domain**
+6. Copy your Railway URL
+7. Update [assets/js/app.js](assets/js/app.js) line 310:
+   ```javascript
+   const response = await fetch('https://your-app.up.railway.app/api/scrape', {
+       method: 'POST'
+   });
+   ```
+8. Commit and push the change
 
 ---
 
