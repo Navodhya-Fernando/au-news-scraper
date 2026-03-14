@@ -444,12 +444,13 @@ def scrape_google_news():
     print(f"📊 Total articles in database: {len(all_articles)}")
     print(f"📊 Unique articles collected: {len(seen_urls)}")
 
-    # --- PUSH TO GITHUB IF NEW ARTICLES EXIST ---
+    # Always push meta.json so the frontend can detect scrape completion.
     if len(new_articles) > 0:
         push_to_github(data_path, 'data/articles.json', f"Automated update: Added {len(new_articles)} new articles")
         push_to_github(meta_path, 'data/meta.json', "Automated update: Updated meta.json timestamps")
     else:
-        print("[GITHUB] No new articles found. Skipping GitHub push.")
+        print("[GITHUB] No new articles found. Pushing ONLY meta.json to signal completion.")
+        push_to_github(meta_path, 'data/meta.json', "Automated update: Scrape check complete, no new articles")
 
     return len(new_articles)
 
